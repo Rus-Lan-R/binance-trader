@@ -16,7 +16,7 @@ jobs:
 
       - name: Create temporary .env for build args
         run: |
-          echo "DOCKER_HUB_USER=${{ secrets.DOCKER_HUB_USER }}" >> .env
+          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
           echo "NODE_ENV=production" >> .env
 
       - name: Log in to Docker Hub
