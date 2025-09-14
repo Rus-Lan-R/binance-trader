@@ -4,6 +4,7 @@ services:
   backend:
     build:
       context: ./backend
+    image: ${DOCKER_HUB_USERNAME}/binance-trader-backend
     container_name: backend
     restart: always
     environment:

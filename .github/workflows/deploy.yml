@@ -20,6 +20,7 @@ jobs:
           echo "BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}" >> .env
           echo "BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }}" >> .env
           echo "TELEGRAM_BOT_KEY=${{ secrets.TELEGRAM_BOT_KEY }}" >> .env
+          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
