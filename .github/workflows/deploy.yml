@@ -14,22 +14,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create .env file
+        run: |
+          echo "NODE_ENV=production" >> .env
+          echo "BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}" >> .env
+          echo "BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }}" >> .env
+          echo "TELEGRAM_BOT_KEY=${{ secrets.TELEGRAM_BOT_KEY }}" >> .env
+
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build Docker image with build args
         run: |
-          docker compose build \
-            --build-arg BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }} \
-            --build-arg BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }} \
-            --build-arg TELEGRAM_BOT_KEY="${{ secrets.TELEGRAM_BOT_KEY }}"
+          docker compose build
 
       - name: Push Docker image
         run: |
-          docker compose push ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
+          docker compose push
 
   deploy:
     runs-on: ubuntu-latest
