@@ -3,17 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-ARG BINANCE_API_KEY
-ARG BINANCE_API_SECRET
-ARG TELEGRAM_BOT_KEY
-
-ENV BINANCE_API_KEY=$BINANCE_API_KEY
-ENV BINANCE_API_SECRET=$BINANCE_API_SECRET
-ENV TELEGRAM_BOT_KEY=$TELEGRAM_BOT_KEY
-
 COPY package*.json ./
-RUN npm install
 COPY . .
+RUN npm install
 RUN npm run build
 
 # Stage 2 — production image

@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker login@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
@@ -26,11 +26,11 @@ jobs:
             --build-arg BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }} \
             --build-arg BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }} \
             --build-arg TELEGRAM_BOT_KEY="${{ secrets.TELEGRAM_BOT_KEY }}" \
-            -t ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest .
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest .
 
       - name: Push Docker image
         run: |
-          docker compose push ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest
+          docker compose push ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,14 +46,14 @@ jobs:
           ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
 
-            if [ "$(docker ps -aq -f name=binance-trader)" ]; then
-              docker stop binance-trader
-              docker rm binance-trader
+            if [ "$(docker ps -aq -f name=binance-trader-backend)" ]; then
+              docker stop binance-trader-backend
+              docker rm binance-trader-backend
             fi
 
             docker run -d \
               --name binance-trader \
-              ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest
+              ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
           EOF

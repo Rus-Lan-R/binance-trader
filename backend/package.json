@@ -20,7 +20,9 @@
     "node-binance-api": "^1.0.14",
     "node-telegram-bot-api": "^0.66.0",
     "path": "^0.12.7",
-    "technicalindicators": "^3.1.0"
+    "technicalindicators": "^3.1.0",
+    "tslib": "^2.8.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
@@ -28,7 +30,6 @@
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "tslib": "^2.8.1",
     "typescript": "^5.9.2"
   }
 }

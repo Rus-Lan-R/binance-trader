@@ -7,6 +7,8 @@ import { emaParams } from "./params/ema";
 import { adxParams } from "./params/adx";
 import { rsiParams } from "./params/rsi";
 import { TelegramBot } from "../services/tg_bot";
+import { WebSocket } from "ws";
+
 dotenv.config();
 
 const BASE_ASSET_NAME = "SOL";
