@@ -1,0 +1,64 @@
+name: Build & Deploy Telegram Bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker image with build args
+        run: |
+          docker build \
+            --build-arg BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }} \
+            --build-arg BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }} \
+            --build-arg TELEGRAM_BOT_KEY="${{ secrets.TELEGRAM_BOT_KEY }}" \
+            -t ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest
+
+  deploy:
+    name: Deploy to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Deploy on VPS
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest
+
+            if [ "$(docker ps -aq -f name=binance-trader)" ]; then
+              docker stop binance-trader
+              docker rm binance-trader
+            fi
+
+            docker run -d \
+              --name binance-trader \
+              ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader:latest
+          EOF

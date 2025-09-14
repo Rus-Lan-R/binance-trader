@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    restart: always
+    environment:
+      BINANCE_API_KEY: ${BINANCE_API_KEY}
+      BINANCE_API_SECRET: ${BINANCE_API_SECRET}
+      TELEGRAM_BOT_KEY: ${TELEGRAM_BOT_KEY}
+    networks:
+      - app-network
+
+  # Web client example
+  # web-client:
+  #   build:
+  #     context: ./web-client
+  #   container_name: web-client
+  #   restart: always
+  #   ports:
+  #     - "3030:3030"
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - backend
+
+networks:
+  app-network:
+    driver: bridge
