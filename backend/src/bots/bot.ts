@@ -28,8 +28,8 @@ export const testTrader = new Trader({
     quoteAssetName: QUOTE_ASSET_NAME,
   },
   settings: {
-    INTERVAL: "1m",
-    RISK_PERCENT: 0.1,
+    INTERVAL: "15m",
+    RISK_PERCENT: 1,
     STOP_LOSS_PERCENT: 0.02,
     TAKE_PROFIT_PERCENT: 0.05,
     K_LINES_LIMIT: 1000,
@@ -106,7 +106,7 @@ export const runBot = async () => {
 
       try {
         lastCandleTime = closeTime;
-        const signal = signalsInstance.getSignal("trendFollowing");
+        const signal = signalsInstance.getSignal("macdCrossover");
 
         console.log(signal.type);
         if (signal.type === "buy" && !testTrader.hasOpenOrders) {
