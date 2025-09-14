@@ -57,6 +57,6 @@ jobs:
             fi
 
             docker run -d \
-              --name binance-trader \
+              --name binance-trader-backend \
               ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
           EOF
