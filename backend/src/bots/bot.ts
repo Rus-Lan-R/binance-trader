@@ -16,8 +16,8 @@ const tgBot = new TelegramBot({ key: process.env.TELEGRAM_BOT_KEY || "" });
 
 export const testTrader = new Trader({
   binance: {
-    apiKey: process.env.TESTNET_BINANCE_API_KEY!,
-    apiSecret: process.env.TESTNET_BINANCE_API_SECRET!,
+    apiKey: process.env.BINANCE_API_KEY!,
+    apiSecret: process.env.BINANCE_API_SECRET!,
     httpBase: "https://testnet.binance.vision",
     wsBase: "wss://testnet.binance.vision/ws",
   },
