@@ -44,25 +44,40 @@ jobs:
           chmod 600 ~/.ssh/github_actions
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy container on VPS
+      - name: SSH Setup
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Docker Login on VPS
+        run: |
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          "docker login -u '${{ secrets.DOCKER_HUB_USERNAME }}' -p '${{ secrets.DOCKER_HUB_PASSWORD }}'"
+
+      - name: Pull Docker Image
+        run: |
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          "docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest"
+
+      - name: Create env file on VPS
         run: |
           ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
-
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
-
             cat > ~/binance-trader-backend.env <<EOT
-          BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}
-          BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }}
-          TELEGRAM_BOT_KEY=${{ secrets.TELEGRAM_BOT_KEY }}
-          NODE_ENV=production
-          EOT
-
-            docker stop binance-trader-backend || true
-            docker rm binance-trader-backend || true
-
-            docker run -d \
-              --name binance-trader-backend \
-              --env-file ~/binance-trader-backend.env \
-              ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest
+            BINANCE_API_KEY=${{ secrets.BINANCE_API_KEY }}
+            BINANCE_API_SECRET=${{ secrets.BINANCE_API_SECRET }}
+            TELEGRAM_BOT_KEY=${{ secrets.TELEGRAM_BOT_KEY }}
+            NODE_ENV=production
+            EOT
           EOF
+
+      - name: Stop and remove old container
+        run: |
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          "docker stop binance-trader-backend || true && docker rm binance-trader-backend || true"
+
+      - name: Run new container
+        run: |
+          ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          "docker run -d --name binance-trader-backend --env-file ~/binance-trader-backend.env ${{ secrets.DOCKER_HUB_USERNAME }}/binance-trader-backend:latest"
