@@ -1,0 +1,34 @@
+{
+  "name": "binance-trader",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bignumber.js": "^9.3.1",
+    "binance-api-node": "^0.12.9",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "lightweight-charts": "^5.0.8",
+    "node-binance-api": "^1.0.14",
+    "node-telegram-bot-api": "^0.66.0",
+    "path": "^0.12.7",
+    "technicalindicators": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node-telegram-bot-api": "^0.64.11",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2"
+  }
+}
