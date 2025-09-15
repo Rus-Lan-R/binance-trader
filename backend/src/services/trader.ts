@@ -30,7 +30,6 @@ export class Trader extends Wallet {
     stepSize: BigNumber;
   };
   public settings: ITraderProps["settings"];
-  public inPosition: boolean;
   public hasOpenOrders: boolean;
 
   constructor(data: ITraderProps) {
@@ -54,7 +53,6 @@ export class Trader extends Wallet {
     };
 
     this.settings = data.settings;
-    this.inPosition = false;
     this.hasOpenOrders = false;
   }
 
@@ -224,7 +222,7 @@ export class Trader extends Wallet {
       });
       console.log("✅ OCO order set:", ocoOrder);
 
-      this.inPosition = true;
+      this.hasOpenOrders = true;
     } catch (err) {
       console.error("❌ Buy with OCO error:", (err as Error).message);
       throw err;
@@ -263,8 +261,6 @@ export class Trader extends Wallet {
         quantity: quantity,
       });
       console.log("✅ Sell order executed:", order);
-
-      this.inPosition = false;
     } catch (err) {
       console.error("❌ Sell error:", (err as Error).message);
       throw err;

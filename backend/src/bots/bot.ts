@@ -29,9 +29,9 @@ export const testTrader = new Trader({
   },
   settings: {
     INTERVAL: "15m",
-    RISK_PERCENT: 1,
+    RISK_PERCENT: 0.1,
     STOP_LOSS_PERCENT: 0.02,
-    TAKE_PROFIT_PERCENT: 0.05,
+    TAKE_PROFIT_PERCENT: 0.01,
     K_LINES_LIMIT: 1000,
   },
 });
@@ -110,14 +110,19 @@ export const runBot = async () => {
 
         console.log(signal.type);
         if (signal.type === "buy" && !testTrader.hasOpenOrders) {
-          console.log("BUY: ", close, " close price");
+          const logMessage = `BUY: ${close} - close price`;
+          console.log(logMessage);
+          await tgBot.sendMessage(logMessage);
           await testTrader.buyWithOco();
         } else if (signal.type === "sell" && testTrader.hasOpenOrders) {
-          console.log("SELL: ", close, " close price");
+          const logMessage = `SELL: ${close} - close price`;
+          console.log(logMessage);
+          await tgBot.sendMessage(logMessage);
           await testTrader.sell();
         }
       } catch (error) {
         console.log("ERROR: ", error);
+        await tgBot.sendMessage(JSON.stringify(error, null, 2));
       }
     }
   };
